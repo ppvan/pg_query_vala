@@ -1,18 +1,8 @@
 
-script = meson.current_source_dir() / 'script.sh'
-
-pgquery = custom_target('pgquery',
-    command : [script, meson.current_build_dir(), meson.current_source_dir()],
-    # input: 'nothing.txt',
-    # capture:true,
-    build_by_default: true,
-    output: 'libpg_query.a',
-)
-
 cc = meson.get_compiler('c')
 pgquery_lib = cc.find_library(
     'pg_query',
-    required: true,
+    required: false,
     dirs: [meson.current_source_dir()],
     static: true,
 )
