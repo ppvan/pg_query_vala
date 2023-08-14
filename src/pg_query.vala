@@ -18,6 +18,9 @@ namespace PGQuery {
 
     /** Strict is true force query to be valid, if not, empty array returned */
     public List<SplitStatement> split_statement (string query, bool strict = false) {
+
+        const string SPACES = " \t\n\r\f\v";
+
         SplitResultInternal result_internal;
         if (strict) {
             result_internal = _split_with_parser (query);
@@ -29,7 +32,7 @@ namespace PGQuery {
         for (var i = 0; i < result_internal.n_stmts; i++) {
             var tmp = result_internal.stmts[i];
 
-            while (query.get_char (tmp->stmt_location) == ' ') {
+            while (SPACES.contains (query.substring (tmp->stmt_location, 1))) {
                 tmp->stmt_location++;
                 tmp->stmt_len--;
             }
