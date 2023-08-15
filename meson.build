@@ -23,15 +23,20 @@ libpg_query = cc.find_library('pg_query', required: true, dirs: lib_path)
 
 pgquery_vala = library('pgquery-vala', sources,
     dependencies: dependencies + [libpg_query],
+    include_directories: include_directories('libpg_query/include'),
     install: true,
     install_dir: [true, true, true]
 )
 
-# pgquery_vala_dep = declare_dependency(
-#     include_directories: include_directories('libpg_query/include'),
-#     link_with: pgquery_vala,
-#     dependencies: dependencies,
-# )
+install_headers(
+    'libpg_query/include/pg_query.h',
+)
+
+pgquery_vala_dep = declare_dependency(
+    include_directories: include_directories('libpg_query/include'),
+    link_with: pgquery_vala,
+    dependencies: dependencies,
+)
 
 pkgconfig = import('pkgconfig')
 
