@@ -32,11 +32,11 @@ install_headers(
     'libpg_query/include/pg_query.h',
 )
 
-pgquery_vala_dep = declare_dependency(
-    include_directories: include_directories('libpg_query/include'),
-    link_with: pgquery_vala,
-    dependencies: dependencies,
-)
+# pgquery_vala_dep = declare_dependency(
+#     include_directories: include_directories('libpg_query/include'),
+#     link_with: pgquery_vala,
+#     dependencies: dependencies,
+# )
 
 pkgconfig = import('pkgconfig')
 
