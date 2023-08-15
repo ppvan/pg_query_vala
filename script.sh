@@ -2,27 +2,32 @@
 
 set -e
 
-build_dir=build
-out_dir=lib
-
-echo "build_dir: $build_dir"
-echo "out_dir: $out_dir"
-
-if [ -d "$build_dir/libpg_query" ]; then
-    echo "libpg_query already built."
-    exit 0
-else
-    echo "Building libquery."
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <build_dir> <src_dir>"
+    exit 1
 fi
 
-git clone --depth 1 --branch 15-4.2.3 https://github.com/pganalyze/libpg_query.git $build_dir/libpg_query
 
-# cd libpg_query
+build_dir=$1
+src_dir=$2
 
-make -C $build_dir/libpg_query build
+echo "build_dir: $build_dir"
+echo "src_dir: $src_dir"
 
-cp $build_dir/libpg_query/libpg_query.a $out_dir/libpg_query.a
-cp $build_dir/libpg_query/libpg_query.a $out_dir/libpg_query.so
-cp $build_dir/libpg_query/pg_query.h $out_dir/include/pg_query.h
+# If rsync is found using rsync 
+if command -v rsync &> /dev/null
+then
+    echo "rsync found"
+    rsync -a $src_dir/libpg_query $build_dir
+else
+    echo "rsync not found"
+    cp -r $src_dir/libpg_query $build_dir
+fi
+
+make -C $src_dir/libpg_query build
+
+# Copy the library to build root so meson can find it
+cp $build_dir/libpg_query/libpg_query.a $build_dir/libpg_query.a
+# cp $build_dir/libpg_query/libpg_query.a $src_dir/libpg_query.a
 
 # cp libpg_query/pg_query.h ../libpg_query/pg_query.h
