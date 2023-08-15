@@ -24,7 +24,7 @@ else
     cp -r $src_dir/libpg_query $build_dir
 fi
 
-make -C $src_dir/libpg_query build
+make -C $build_dir/libpg_query build
 
 # Copy the library to build root so meson can find it
 cp $build_dir/libpg_query/libpg_query.a $build_dir/libpg_query.a
