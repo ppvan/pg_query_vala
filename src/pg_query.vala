@@ -17,9 +17,9 @@ namespace PGQuery {
 
 
     /** Strict is true force query to be valid, if not, empty array returned */
-    public List<SplitStatement> split_statement (string query, bool strict = false) {
+    public List<SplitStatement>? split_statement (string query, bool strict = false) {
 
-        const string SPACES = " \t\n\r\f\v";
+        //  const string SPACES = " \t\n\r\f\v";
 
         SplitResultInternal result_internal;
         if (strict) {
@@ -27,16 +27,14 @@ namespace PGQuery {
         } else {
             result_internal = _split_with_scanner (query);
         }
+
         var statements = new List<SplitStatement> ();
 
         for (var i = 0; i < result_internal.n_stmts; i++) {
-            var tmp = result_internal.stmts[i];
-
-            while (SPACES.contains (query.substring (tmp->stmt_location, 1))) {
-                tmp->stmt_location++;
-                tmp->stmt_len--;
+            if (result_internal.error != null) {
+                return null;
             }
-
+            var tmp = result_internal.stmts[i];
             string statement = query.substring (tmp->stmt_location, tmp->stmt_len);
             int loc = tmp->stmt_location;
             

@@ -13,6 +13,7 @@ namespace PGQueryInternal {
     private SplitResultInternal _split_with_parser (string query);
 
 
+    //  [SimpleType]
     [CCode (cname = "PgQueryError")]
     private struct ErrorInternal {
         private string message;
@@ -33,7 +34,7 @@ namespace PGQueryInternal {
 
         private int n_stmts;
         private string stderr_buffer;
-        private ErrorInternal error;
+        private ErrorInternal* error;
     }
 
     [SimpleType]
