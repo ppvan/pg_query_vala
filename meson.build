@@ -4,19 +4,25 @@ project(
     default_options: ['buildtype=release', 'prefix=/usr'],
 )
 
+cc = meson.get_compiler('c')
+libpg_query_sys = cc.find_library('pg_query', has_headers: 'pg_query.h', required: false)
+
+if not libpg_query_sys.found()
+    libpg_query = custom_target(
+        'libpg_query',
+        input: 'libpg_query/Makefile',
+        output: 'libpg_query.a',
+        command: ['script.sh', meson.current_build_dir(), meson.current_source_dir()],
+        build_always: true,
+        install: false,
+    )
+endif
+
 dependencies = [
     dependency('glib-2.0'),
     dependency('gobject-2.0'),
+    libpg_query_sys
 ]
-
-libpg_query = custom_target(
-    'libpg_query',
-    input: 'libpg_query/Makefile',
-    output: 'libpg_query.a',
-    command: ['script.sh', meson.current_build_dir(), meson.current_source_dir()],
-    build_always: true,
-    install: false,
-)
 
 # foobar_dep = declare_dependency (sources: lib_target)
 
@@ -28,21 +34,26 @@ vapi_dir = meson.current_source_dir() / 'vapi'
 add_project_arguments(['--vapidir', vapi_dir], language: 'vala')
 add_project_arguments(['--pkg', 'libpg_query'], language: 'vala')
 
-# cc = meson.get_compiler('c')
-# lib_path = meson.current_source_dir() / 'libpg_query'
-# libpg_query = cc.find_library('pg_query', required: true, dirs: lib_path)
+if libpg_query_sys.found()
+    pgquery_vala = library('pgquery-vala', sources,
+        dependencies: dependencies,
+        include_directories: include_directories('libpg_query'),
+        install: true,
+        install_dir: [true, true, true]
+    )
+else
+    pgquery_vala = library('pgquery-vala', sources,
+        dependencies: dependencies,
+        include_directories: include_directories('libpg_query'),
+        install: true,
+		link_with: libpg_query,
+        install_dir: [true, true, true]
+    )
 
-pgquery_vala = library('pgquery-vala', sources,
-    dependencies: dependencies,
-    include_directories: include_directories('libpg_query'),
-    install: true,
-    link_with: libpg_query,
-    install_dir: [true, true, true]
-)
-
-install_headers(
-    'libpg_query/pg_query.h',
-)
+    install_headers(
+        'libpg_query/pg_query.h',
+    )
+endif
 
 # pgquery_vala_dep = declare_dependency(
 #     include_directories: include_directories('libpg_query/include'),
