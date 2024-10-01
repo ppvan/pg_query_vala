@@ -13,7 +13,7 @@ if not libpg_query_sys.found()
         input: 'libpg_query/Makefile',
         output: 'libpg_query.a',
         command: ['script.sh', meson.current_build_dir(), meson.current_source_dir()],
-        build_always: true,
+        build_by_default: true,
         install: false,
     )
 endif
@@ -55,11 +55,11 @@ else
     )
 endif
 
-# pgquery_vala_dep = declare_dependency(
-#     include_directories: include_directories('libpg_query/include'),
-#     link_with: pgquery_vala,
-#     dependencies: dependencies,
-# )
+pgquery_vala_dep = declare_dependency(
+    include_directories: include_directories('libpg_query'),
+    link_with: pgquery_vala,
+    dependencies: dependencies,
+)
 
 pkgconfig = import('pkgconfig')
 
